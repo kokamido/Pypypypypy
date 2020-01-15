@@ -65,7 +65,7 @@ def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: Glycolysi
 
     if path_to_save:
         set_rc_params_for_1d_patterns()
-        dir_to_save = os.path.join(path_to_save, str(datetime.now().date()), str(id_))
+        dir_to_save = os.path.join(path_to_save, str(datetime.now().date()), str(id_)).replace(':','_')
         logger.info('Saving results to \'{0}\''.format(dir_to_save))
         if not os.path.exists(dir_to_save):
             os.makedirs(dir_to_save)
