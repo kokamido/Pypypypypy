@@ -1,7 +1,7 @@
-from Glycolysis import GlycolysisSettings, run
-from InitCond1dSettings import InitCond1dSettings
-from MathHelper import calc_difference
-from DrawHelper import draw_values
+from Product.Glycolysis import GlycolysisSettings, run
+from Product.InitCond1dSettings import InitCond1dSettings
+from Product.MathHelper import calc_difference
+from Product.DrawHelper import draw_values
 from typing import Dict, Any
 import numpy as np
 from matplotlib import rcParams
@@ -10,7 +10,6 @@ from datetime import datetime
 import logging
 import json
 import os
-import gzip
 
 logger = logging.getLogger('experiment_{0}'.format(datetime.now()))
 handler = logging.StreamHandler()
@@ -31,7 +30,8 @@ def set_rc_params_for_1d_patterns():
 
 
 def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: GlycolysisSettings, t0: float, t1: float,
-                   dt: float, tolerance: float = 1e-5, path_to_save: str = None, save_transient: bool = False) -> \
+                   dt: float, tolerance: float = 1e-5, path_to_save: str = None, save_transient: bool = False,
+                   transient_save_step: float = 0.1) -> \
         Dict[str, Any]:
     logger.info('Start experiment with id:\'{0}\'\ninit: conditions \'{1}\'\nparams: \'{2}\''
                 .format(id_, str(init_pattern), str(params)))
@@ -39,14 +39,16 @@ def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: Glycolysi
     delta = 999999
     result = {'init': init_pattern.to_dict(),
               'init_pattern': init_curve,
-              'params': params.to_dict()}
+              'params': params.to_dict(),
+              'method_params':{'dt':dt, 'tolerance':tolerance,'transient save step':transient_save_step}}
     if save_transient:
         process = np.array([current_pattern])
     step = 0
     t_start = t0
     t_end = t0 + dt * 10000
-    transient_save_step = int(0.1 / dt)
-    while delta > tolerance and t_end < t1:
+    transient_save_step = int(transient_save_step / dt)
+    iters_to_check_stability = 10
+    while iters_to_check_stability > 0 and t_end < t1:
         step += 1
         new_patterns, meta = run(params, np.arange(t_start, t_end, dt), current_pattern)
         if meta['message'] != 'Integration successful.':
@@ -59,13 +61,23 @@ def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: Glycolysi
         logger.debug('delta after step {0} is {1}'.format(step, delta))
         t_start = t_end
         t_end += dt * 10000
+        if delta < tolerance:
+            logger.debug('Stability checking, delta after step {0} is {1}'.format(step, delta))
+            iters_to_check_stability -= 1
+        else:
+            iters_to_check_stability = 10
+    result['method_params']['max_time'] = t_start
 
     result['end_pattern'] = current_pattern
-    logger.info('Experiment with id \'{0}\' has been successfully finished'.format(id_))
+    if delta < tolerance:
+        
+        logger.info('Experiment with id \'{0}\' has been successfully finished'.format(id_))
+    else:
+        logger.info('Experiment with id \'{0}\' has been failed'.format(id_))
 
     if path_to_save:
         set_rc_params_for_1d_patterns()
-        dir_to_save = os.path.join(path_to_save, str(datetime.now().date()), str(id_)).replace(':','_')
+        dir_to_save = os.path.join(path_to_save, str(datetime.now().date()).replace(':', '_'), str(id_))
         logger.info('Saving results to \'{0}\''.format(dir_to_save))
         if not os.path.exists(dir_to_save):
             os.makedirs(dir_to_save)
@@ -84,7 +96,7 @@ def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: Glycolysi
 
         if save_transient:
             logger.debug('Saving process')
-            with gzip.open(dir_to_save + '/process.gz', 'wb') as out:
+            with open(dir_to_save + '/process', 'w') as out:
                 np.savetxt(out, process, fmt='%.6f', delimiter=',')
     elif save_transient:
         result['process'] = process

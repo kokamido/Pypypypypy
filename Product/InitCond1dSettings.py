@@ -25,8 +25,8 @@ class InitCond1dSettings:
             return self.__get_init_values_cos()
 
     def __get_init_values_rand(self) -> np.ndarray:
-        u = np.random.rand(self.points_count) * self.amp + 1
-        v = np.random.rand(self.points_count) * self.amp + 1
+        u = np.random.rand(self.points_count) * self.amp + 1 - self.amp/2
+        v = np.random.rand(self.points_count) * self.amp + 1 - self.amp/2
         res = np.zeros(self.points_count * 2, dtype=np.float)
         res[::2] = u
         res[1::2] = v

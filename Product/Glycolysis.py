@@ -1,6 +1,6 @@
 from typing import Dict, Any
 import numpy as np
-import MathHelper as mh
+from Product import MathHelper as mh
 
 
 class GlycolysisSettings:
