@@ -2,7 +2,7 @@ import os
 import json
 import numpy as np
 from typing import Dict, Any
-from Analyze import PatternAnalyzeHelper
+from Analyze.Glycolysis1d import PatternAnalyzeHelper
 
 
 class Result:

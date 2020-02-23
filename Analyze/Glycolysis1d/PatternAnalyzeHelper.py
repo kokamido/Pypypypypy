@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from typing import Dict, Any
-from Analyze.Result import Result
+from Analyze.Glycolysis1d.Result import Result
 
 
 def preprocess_string_saved_by_np(string: str) -> str:

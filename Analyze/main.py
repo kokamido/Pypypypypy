@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 from datetime import datetime
-from Analyze.PatternAnalyzeHelper import add_picks_analysis_to_meta
-from Analyze.Result import ResultHiggins
+from Analyze.Glycolysis1d.PatternAnalyzeHelper import add_picks_analysis_to_meta
+from Analyze.Glycolysis1d.Result import ResultHiggins
 
 base_directory = 'C:\\Users\\alexandr.pankratov\\math_newest\\2020-02-02'
 
