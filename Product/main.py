@@ -1,4 +1,4 @@
-from Product.Experiment import *
+from Product.Glycolysis1D.Experiment import *
 import os
 
 init_cond = InitCond1dSettings('rand', 0.25, 1000, 3.5)

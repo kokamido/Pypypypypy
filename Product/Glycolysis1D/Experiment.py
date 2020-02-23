@@ -1,7 +1,7 @@
-from Product.Glycolysis import GlycolysisSettings, run
-from Product.InitCond1dSettings import InitCond1dSettings
+from Product.Glycolysis1D.Glycolysis import GlycolysisSettings, run
+from Product.Glycolysis1D.InitCond1dSettings import InitCond1dSettings
 from Product.MathHelper import calc_difference
-from Product.DrawHelper import draw_values
+from Product.Glycolysis1D.DrawHelper import draw_values
 from typing import Dict, Any
 import numpy as np
 from matplotlib import rcParams
