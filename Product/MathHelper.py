@@ -1,6 +1,7 @@
+from typing import Tuple, Dict, Callable
+
 import numpy as np
 from scipy.integrate import odeint
-from typing import Tuple, Dict, Callable
 
 
 def integrate1d(func: Callable[[np.ndarray, float], np.ndarray],
@@ -14,3 +15,8 @@ def integrate1d(func: Callable[[np.ndarray, float], np.ndarray],
 
 def calc_difference(a: np.ndarray, b: np.ndarray) -> float:
     return np.sum(np.abs(a - b))
+
+
+def neyavnaya_shema2d(data: np.ndarray, make_matrix: Callable[[np.ndarray], np.ndarray],
+                    make_b: Callable[[np.ndarray], np.ndarray]) -> np.ndarray:
+    return np.linalg.solve(make_matrix(data),make_b(data))

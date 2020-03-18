@@ -1,6 +1,8 @@
 import re
-import numpy as np
 from typing import Dict, Any
+
+import numpy as np
+
 from Analyze.Glycolysis1d.Result import Result
 
 

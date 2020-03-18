@@ -1,9 +1,12 @@
 from typing import Dict, Any
+
 import numpy as np
+
 from Product import MathHelper as mh
+from Product.SystemSettings import SystemSettings
 
 
-class GlycolysisSettings:
+class GlycolysisSettings(SystemSettings):
     p: float = None
     q: float = None
     Du: float = None
@@ -16,6 +19,8 @@ class GlycolysisSettings:
         self.Du = Du
         self.Dv = Dv
         self.dx = dx
+        self.steps = {'dx': dx}
+        self.params = {'p': p, 'q': q, 'Du': Du, 'Dv': Dv}
 
     def as_tuple(self):
         return self.p, self.q, self.Du, self.Dv, self.dx
@@ -47,11 +52,11 @@ def calc_Du_crit(p: float, q: float, Dv: float) -> float:
     return (q + 1) / p * (2 * q + 1 + 2 * np.sqrt(q * (q + 1))) * Dv
 
 
-def __g(u: np.ndarray, v: np.ndarray, p: float, q: float) -> np.ndarray:
+def __f(u: np.ndarray, v: np.ndarray, p: float, q: float) -> np.ndarray:
     return 1 - u * v
 
 
-def __h(u: np.ndarray, v: np.ndarray, p: float, q: float) -> np.ndarray:
+def __g(u: np.ndarray, v: np.ndarray, p: float, q: float) -> np.ndarray:
     return p * v * (u - (1 + q) / (q + v))
 
 
@@ -62,11 +67,11 @@ def __glycolysis(y: np.ndarray, t: float, p: float, q: float, Du: float, Dv: flo
     dudt = dydt[::2]
     dvdt = dydt[1::2]
 
-    dudt[0] = __g(u[0], v[0], p, q) + Du * (-2.0 * u[0] + 2.0 * u[1]) / dx ** 2
-    dudt[1:-1] = __g(u[1:-1], v[1:-1], p, q) + Du * np.diff(u, 2) / dx ** 2
-    dudt[-1] = __g(u[-1], v[-1], p, q) + Du * (- 2.0 * u[-1] + 2.0 * u[-2]) / dx ** 2
-    dvdt[0] = __h(u[0], v[0], p, q) + Dv * (-2.0 * v[0] + 2.0 * v[1]) / dx ** 2
-    dvdt[1:-1] = __h(u[1:-1], v[1:-1], p, q) + Dv * np.diff(v, 2) / dx ** 2
-    dvdt[-1] = __h(u[-1], v[-1], p, q) + Dv * (-2.0 * v[-1] + 2.0 * v[-2]) / dx ** 2
+    dudt[0] = __f(u[0], v[0], p, q) + Du * (-2.0 * u[0] + 2.0 * u[1]) / dx ** 2
+    dudt[1:-1] = __f(u[1:-1], v[1:-1], p, q) + Du * np.diff(u, 2) / dx ** 2
+    dudt[-1] = __f(u[-1], v[-1], p, q) + Du * (- 2.0 * u[-1] + 2.0 * u[-2]) / dx ** 2
+    dvdt[0] = __g(u[0], v[0], p, q) + Dv * (-2.0 * v[0] + 2.0 * v[1]) / dx ** 2
+    dvdt[1:-1] = __g(u[1:-1], v[1:-1], p, q) + Dv * np.diff(v, 2) / dx ** 2
+    dvdt[-1] = __g(u[-1], v[-1], p, q) + Dv * (-2.0 * v[-1] + 2.0 * v[-2]) / dx ** 2
 
     return dydt

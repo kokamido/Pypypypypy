@@ -1,7 +1,9 @@
-import os
 import json
-import numpy as np
+import os
 from typing import Dict, Any
+
+import numpy as np
+
 from Analyze.Glycolysis1d import PatternAnalyzeHelper
 
 

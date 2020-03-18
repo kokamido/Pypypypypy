@@ -1,6 +1,8 @@
 import os
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
+
 from Analyze.Glycolysis1d.PatternAnalyzeHelper import add_picks_analysis_to_meta
 from Analyze.Glycolysis1d.Result import ResultHiggins
 
