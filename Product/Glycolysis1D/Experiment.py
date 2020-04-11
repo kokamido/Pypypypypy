@@ -9,8 +9,8 @@ from matplotlib import pylab as plt
 from matplotlib import rcParams
 
 from Product.Glycolysis1D.DrawHelper import draw_values1D
-from Product.Glycolysis1D.Glycolysis import GlycolysisSettings, run
-from Product.Glycolysis1D.InitCond1dSettings import InitCond1dSettings
+from Product.Glycolysis1D.Glycolysis import GlycolysisSettings, run_higgins_1d
+from Product.Glycolysis1D.InitCond1dSettings import InitCond1dSettings, InitCondSettings
 from Product.MathHelper import calc_difference
 
 logger = logging.getLogger('experiment_{0}'.format(datetime.now()))
@@ -31,7 +31,7 @@ def set_rc_params_for_1d_patterns():
     rcParams['grid.color'] = 'black'
 
 
-def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: GlycolysisSettings, t0: float, t1: float,
+def run_experiment(id_: str, init_pattern: InitCondSettings, params: GlycolysisSettings, t0: float, t1: float,
                    dt: float, tolerance: float = 1e-5, path_to_save: str = None, save_transient: bool = False,
                    transient_save_step: float = 0.1) -> \
         Dict[str, Any]:
@@ -52,9 +52,9 @@ def run_experiment(id_: str, init_pattern: InitCond1dSettings, params: Glycolysi
     iters_to_check_stability = 10
     new_patterns, meta = None,None
     try:
-        while iters_to_check_stability > 0 and t_end < t1:
+        while iters_to_check_stability > 0 and t_end <= t1:
             step += 1
-            new_patterns, meta = run(params, np.arange(t_start, t_end, dt), current_pattern)
+            new_patterns, meta = run_higgins_1d(params, np.arange(t_start, t_end, dt), current_pattern)
             if meta['message'] != 'Integration successful.':
                 raise Exception(meta['message'])
             delta = calc_difference(current_pattern, new_patterns[-1])

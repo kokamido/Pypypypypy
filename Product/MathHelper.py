@@ -9,9 +9,16 @@ def integrate1d(func: Callable[[np.ndarray, float], np.ndarray],
                 time_points: np.ndarray,
                 init_values: np.ndarray) \
         -> Tuple[np.ndarray, Dict[str, any]]:
-    data, meta = odeint(func, init_values, time_points, args=params, ml=2, mu=2, full_output=True)
+    data, meta = odeint(func, init_values, time_points, args=params, ml=2, mu=2, full_output=1)
     return data, meta
 
+def integrate0d(func: Callable[[np.ndarray, float], np.ndarray],
+                params: Tuple,
+                time_points: np.ndarray,
+                init_values: np.ndarray) \
+        -> Tuple[np.ndarray, Dict[str, any]]:
+    data, meta = odeint(func, init_values, time_points, args=params, full_output=1)
+    return data, meta
 
 def calc_difference(a: np.ndarray, b: np.ndarray) -> float:
     return np.sum(np.abs(a - b))

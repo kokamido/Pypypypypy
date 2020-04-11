@@ -44,8 +44,12 @@ class GlycolysisSettings(SystemSettings):
         return self.__to_str()
 
 
-def run(glycolysis_settings: GlycolysisSettings, time_points: np.ndarray, init_condition: np.ndarray):
+def run_higgins_1d(glycolysis_settings: GlycolysisSettings, time_points: np.ndarray, init_condition: np.ndarray):
     return mh.integrate1d(__glycolysis, glycolysis_settings.as_tuple(), time_points, init_condition)
+
+
+def run_higgins_0d(p: float, q: float, time_points: np.ndarray, init_condition: np.ndarray):
+    return mh.integrate0d(__glycolysis_without_diffusion, (p,q), time_points, init_condition)
 
 
 def calc_Du_crit(p: float, q: float, Dv: float) -> float:
@@ -75,3 +79,8 @@ def __glycolysis(y: np.ndarray, t: float, p: float, q: float, Du: float, Dv: flo
     dvdt[-1] = __g(u[-1], v[-1], p, q) + Dv * (-2.0 * v[-1] + 2.0 * v[-2]) / dx ** 2
 
     return dydt
+
+def __glycolysis_without_diffusion(y: np.ndarray, t: float, p: float, q: float) -> np.ndarray:
+    u = y[0]
+    v = y[1]
+    return np.array([__f(u, v, p, q), __g(u, v, p, q)])

@@ -3,7 +3,20 @@ from typing import Any, Dict
 import numpy as np
 
 
-class InitCond1dSettings:
+class InitCondSettings:
+    values = None
+    points_count = None
+
+    def calc_values(self) -> np.ndarray:
+        return self.values
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {'values' : np.array_str(self.values)}
+
+
+
+
+class InitCond1dSettings(InitCondSettings):
     pattern_type: str = None
     amp: float = None
     points_count: int = None
@@ -15,7 +28,7 @@ class InitCond1dSettings:
         self.points_count = points_count
         self.picks_count = picks_count
 
-    def calc_values(self):
+    def calc_values(self) -> np.ndarray:
         assert self.amp is not None
         assert self.points_count is not None
         if self.pattern_type is None or self.pattern_type == 'rand':
