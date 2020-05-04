@@ -1,5 +1,6 @@
 from typing import Any, Dict
-
+import json
+import re
 import numpy as np
 
 
@@ -12,6 +13,19 @@ class InitCondSettings:
 
     def to_dict(self) -> Dict[str, Any]:
         return {'values' : np.array_str(self.values)}
+
+    def init_from_meta(self, folder: str)-> None:
+        meta = self.__load_meta__(folder)
+        self.values = meta['end_pattern']
+        self.points_count = meta['init']['points_count']
+
+    def __load_meta__(self, path: str) -> Dict[str, Any]:
+        curr = ''
+        with open(path+'\\meta.json') as inp:
+            curr = json.load(inp)
+        curr['init_pattern'] = np.fromstring(re.sub('[\\s]+', ' ', curr['init_pattern'][1:-1]), dtype=np.float, sep=' ')
+        curr['end_pattern'] = np.fromstring(re.sub('[\\s]+', ' ', curr['end_pattern'][1:-1]), dtype=np.float, sep=' ')
+        return curr
 
 
 

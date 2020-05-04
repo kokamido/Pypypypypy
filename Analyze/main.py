@@ -6,7 +6,7 @@ import pandas as pd
 from Analyze.Glycolysis1d.PatternAnalyzeHelper import add_picks_analysis_to_meta
 from Analyze.Glycolysis1d.Result import ResultHiggins
 
-base_directory = 'C:\\Users\\alexandr.pankratov\\bashkirtseva\\pattern_stat_07_04_2020_small_noise'
+base_directory = 'C:\\Users\\alexandr.pankratov\\Desktop\\pravki\\data2'
 
 results = []
 for subdirr in os.listdir(base_directory):
